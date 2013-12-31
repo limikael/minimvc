@@ -84,7 +84,9 @@
 					if (!is_array($result))
 						$result=array();
 
-					$result["ok"]=1;
+					if (!array_key_exists("ok",$result))
+						$result["ok"]=1;
+	
 					echo json_encode($result);
 					return;
 			}

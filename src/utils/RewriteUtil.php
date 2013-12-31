@@ -75,13 +75,18 @@
 		 */
 		public static function splitUrlPath($path) {
 			$components=explode("/",$path);
+			$res=array();
 
-			while (sizeof($components)>0 && $components[sizeof($components)-1]==="")
+			foreach ($components as $component)
+				if ($component)
+					$res[]=$component;
+
+			/*while (sizeof($components)>0 && $components[sizeof($components)-1]==="")
 				array_pop($components);
 
 			while (sizeof($components)>0 && $components[0]==="")
-				array_shift($components);
+				array_shift($components);*/
 
-			return $components;
+			return $res;
 		}
 	}
