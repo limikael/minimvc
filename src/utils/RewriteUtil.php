@@ -33,12 +33,19 @@
 		 * Get base including host and protocol.
 		 */
 		public static function getBaseUrl() {
-			$proto="http://";
+			$url="http://";
 
 			if (isset($_SERVER['HTTPS']))
-				$proto="https://";
+				$url="https://";
 
-			return $proto.$_SERVER["SERVER_NAME"].self::getBase();
+			$url.=$_SERVER["SERVER_NAME"];
+
+			if ($_SERVER["SERVER_PORT"]!=80)
+				$url.=":".$_SERVER["SERVER_PORT"];
+
+			$url.=self::getBase();
+
+			return $url;
 		}
 
 		/**
