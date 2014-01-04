@@ -64,7 +64,7 @@
 				else
 					$file=fopen(self::$fn,"a");
 
-				fwrite($file,date("M j H:m:s")." ".$channel.": ".$message."\n");
+				fwrite($file,date("M j H:i:s")." ".$channel.": ".$message."\n");
 				fflush($file);
 				fclose($file);
 			}
