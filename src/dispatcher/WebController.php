@@ -72,4 +72,14 @@
 			$m->setResultProcessing($this->resultProcessing);
 			$this->addMethod($m);
 		}
+
+		/**
+		 * Set result processing for method.
+		 */
+		protected function process($methodName, $resultProcessing) {
+			if (!array_key_exists($methodName,$this->methods))
+				throw new Exception("Unable to set method processing, no method named ".$methodName);
+
+			$this->methods[$methodName]->setResultProcessing($resultProcessing);
+		}
 	}
