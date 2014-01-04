@@ -50,6 +50,9 @@
 			else
 				$controllerName=$this->defaultController;
 
+			if (!$controllerName)
+				$this->prematureFail("No contrller.");
+
 			if (sizeof($components)>=2)
 				$methodName=$components[1];
 
