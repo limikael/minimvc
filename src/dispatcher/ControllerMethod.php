@@ -1,9 +1,7 @@
 <?php
 
-	require_once "dispatcher/ControllerMethod.php";
-
 	/**
-	 * Base application controller.
+	 * Method definition.
 	 */
 	class ControllerMethod {
 
@@ -16,10 +14,10 @@
 		/**
 		 * Constructor.
 		 */
-		public function ControllerMethod($name, $numPathArgs, $requestParameters) {
+		public function ControllerMethod($name) {
 			$this->methodName=$name;
-			$this->requestParameters=$requestParameters;
-			$this->numPathArgs=$numPathArgs;
+			$this->requestParameters=array();;
+			$this->numPathArgs=0;
 		}
 
 		/**
@@ -30,10 +28,26 @@
 		}
 
 		/**
+		 * Set arguments.
+		 */
+		public function args(/*...*/) {
+			$this->requestParameters=func_get_args();
+		}
+
+		/**
+		 * Set arguments.
+		 */
+		public function paths($num) {
+			$this->numPathArgs=$num;
+		}
+
+		/**
 		 * Set result processing.
 		 */
-		public function setResultProcessing($value) {
+		public function type($value) {
 			$this->resultProcessing=$value;
+
+			return $this;
 		}
 
 		/**
