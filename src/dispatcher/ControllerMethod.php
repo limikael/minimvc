@@ -32,6 +32,8 @@
 		 */
 		public function args(/*...*/) {
 			$this->requestParameters=func_get_args();
+
+			return $this;
 		}
 
 		/**
@@ -39,6 +41,8 @@
 		 */
 		public function paths($num) {
 			$this->numPathArgs=$num;
+
+			return $this;
 		}
 
 		/**
@@ -112,15 +116,13 @@
 		private function fail($message, $trace=NULL) {
 			switch ($this->resultProcessing) {
 				case "json":
-					Log::error("Error in json call: ".$message."\n".$trace);
+					header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 					$r=array("ok"=>0,"message"=>$message);
 					echo json_encode($r);
 					break;
 
 				default:
-					echo "fail..";
-					echo $message;
-					echo "<pre>".$trace."</pre>";
+					$this->controller->fail($message,$trace);
 					break;
 			}
 

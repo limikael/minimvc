@@ -1,6 +1,8 @@
 <?php
 
-	require_once "utils/RewriteUtil.php";
+	require_once __DIR__."/../utils/RewriteUtil.php";
+	require_once __DIR__."/../template/Template.php";
+	require_once __DIR__."/../utils/SystemUtil.php";
 
 	/**
 	 * Dispatch controller access.
@@ -9,12 +11,14 @@
 
 		private $classPath;
 		private $defaultController;
+		private $errorTemplate;
 
 		/**
 		 * Construct.
 		 */
 		public function WebDispatcher($classPath) {
 			$this->classPath=$classPath;
+			$this->errorTemplate=__DIR__."/errortemplate.php";
 		}
 
 		/**
@@ -44,6 +48,8 @@
 		 * Dispatch components.
 		 */
 		private function dispatchComponents($components) {
+			$this->init();
+
 			if (sizeof($components)>=1)
 				$controllerName=$components[0];
 
@@ -51,7 +57,7 @@
 				$controllerName=$this->defaultController;
 
 			if (!$controllerName)
-				$this->prematureFail("No contrller.");
+				$this->fail("No controller.");
 
 			if (sizeof($components)>=2)
 				$methodName=$components[1];
@@ -66,21 +72,38 @@
 			$controller=new $controllerClassName;
 
 			if (!$controller)
-				$this->prematureFail("No such controller.");
+				$this->fail("No such controller.");
 
+			$controller->setDispatcher($this);
 			$method=$controller->getMethod($methodName);
 
 			if (!$method)
-				$this->prematureFail("No such method.");
+				$this->fail("No such method.");
 
 			$method->invoke(array_slice($components,2),$_REQUEST);
 		}
 
 		/**
+		 * Make the system sane.
+		 */
+		private function init() {
+			SystemUtil::enableErrorExceptions();
+			SystemUtil::disableMagicQuotes();
+		}
+
+		/**
 		 * Fail.
 		 */
-		private function prematureFail($message) {
-			echo $message;
+		public function fail($message, $trace="") {
+			header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+
+			$m="**** ".$_SERVER["HTTP_HOST"]." ****\n\n$message\n\n$trace";
+
+			$m=nl2br($m);
+
+			$t=new Template($this->errorTemplate);
+			$t->set("message",$m);
+			$t->show();
 			exit();
 		}
 	}

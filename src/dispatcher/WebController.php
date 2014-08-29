@@ -1,6 +1,6 @@
 <?php
 
-	require_once "dispatcher/ControllerMethod.php";
+	require_once __DIR__."/ControllerMethod.php";
 
 	/**
 	 * Base application controller.
@@ -9,13 +9,13 @@
 
 		private $methods=array();
 		private $defaultMethod;
-		protected $resultProcessing;
+		private $defaultType;
+		private $dispatcher;
 
 		/**
 		 * Construct.
 		 */
-		public function WebController($resultProcessing=NULL) {
-			$this->resultProcessing=$resultProcessing;
+		public function WebController() {
 		}
 
 		/**
@@ -23,6 +23,13 @@
 		 */
 		protected function setDefaultMethod($value) {
 			$this->defaultMethod=$value;
+		}
+
+		/**
+		 * Set reference to dispatcher.
+		 */
+		public function setDispatcher($value) {
+			$this->dispatcher=$value;
 		}
 
 		/**
@@ -34,6 +41,13 @@
 
 			$method->setController($this);
 			$this->methods[$method->getName()]=$method;
+		}
+
+		/**
+		 * Set default type.
+		 */
+		protected function setDefaultType($type) {
+			$this->defaultType=$type;
 		}
 
 		/**
@@ -50,36 +64,20 @@
 		}
 
 		/**
-		 * Add a method to serve.
+		 * Create and add a method.
 		 */
-		protected function serve($methodName, $requestParameters=NULL) {
-			if (!$requestParameters)
-				$requestParameters=array();
-
-			$m=new ControllerMethod($methodName,0,$requestParameters);
-			$m->setResultProcessing($this->resultProcessing);
+		protected function method($methodName) {
+			$m=new ControllerMethod($methodName);
+			$m->type($this->defaultType);
 			$this->addMethod($m);
+
+			return $m;
 		}
 
 		/**
-		 * Add a method to serve.
+		 * Fail.
 		 */
-		protected function serveWithArgs($methodName, $numPathArgs, $requestParameters=NULL) {
-			if (!$requestParameters)
-				$requestParameters=array();
-
-			$m=new ControllerMethod($methodName,$numPathArgs,$requestParameters);
-			$m->setResultProcessing($this->resultProcessing);
-			$this->addMethod($m);
-		}
-
-		/**
-		 * Set result processing for method.
-		 */
-		protected function process($methodName, $resultProcessing) {
-			if (!array_key_exists($methodName,$this->methods))
-				throw new Exception("Unable to set method processing, no method named ".$methodName);
-
-			$this->methods[$methodName]->setResultProcessing($resultProcessing);
+		public function fail($message, $trace) {
+			$this->dispatcher->fail($message,$trace);
 		}
 	}
