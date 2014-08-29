@@ -17,6 +17,8 @@
 			$this->method("twopaths")->paths(2);
 			$this->method("generror");
 			$this->method("genjsonerror")->type("json");
+			$this->method("generror2");
+			$this->method("genjsonerror2")->type("json");
 		}
 
 		/**
@@ -47,5 +49,23 @@
 		 */
 		public function genjsonerror() {
 			throw new Exception("this is an error");
+		}
+
+		/**
+		 * Gen error.
+		 */
+		public function generror2() {
+			$t=array();
+			$a=$t["hello"];
+//			throw new Exception("this is an error");
+		}
+
+		/**
+		 * Gen error.
+		 */
+		public function genjsonerror2() {
+			$t=array();
+			$a=$t["hello"];
+//			throw new Exception("this is an error");
 		}
 	}

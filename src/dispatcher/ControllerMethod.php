@@ -117,7 +117,7 @@
 			switch ($this->resultProcessing) {
 				case "json":
 					header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-					$r=array("ok"=>0,"message"=>$message);
+					$r=array("ok"=>0,"message"=>$message,"trace"=>$trace);
 					echo json_encode($r);
 					break;
 
