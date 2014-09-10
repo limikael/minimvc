@@ -3,6 +3,7 @@
 	require_once __DIR__."/../utils/RewriteUtil.php";
 	require_once __DIR__."/../template/Template.php";
 	require_once __DIR__."/../utils/SystemUtil.php";
+	require_once __DIR__."/WebController.php";
 
 	/**
 	 * Dispatch controller access.
@@ -68,8 +69,14 @@
 			$controllerClassName=ucfirst($controllerName)."Controller";
 			$controllerFileName=$this->classPath."/".$controllerClassName.".php";
 
-			require_once $controllerFileName;
-			$controller=new $controllerClassName;
+			try {
+				require_once $controllerFileName;
+				$controller=new $controllerClassName;
+			}
+
+			catch (Exception $e) {
+				$this->fail($e->getMessage(),$e->getTraceAsString());
+			}
 
 			if (!$controller)
 				$this->fail("No such controller.");
