@@ -102,7 +102,8 @@
 		 * Fail.
 		 */
 		public function fail($message, $trace="") {
-			header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+			if (!headers_sent())
+				header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 
 			$m="**** ".$_SERVER["HTTP_HOST"]." ****\n\n$message\n\n$trace";
 
