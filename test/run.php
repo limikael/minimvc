@@ -1,4 +1,4 @@
 #!/usr/bin/env php
 <?php
 
-	system(__DIR__."/../vendor/bin/phpunit ".__DIR__."/unit");
+	system(__DIR__."phpunit ".__DIR__."/unit");

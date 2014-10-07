@@ -15,6 +15,11 @@
 			$this->a=$a;
 			$this->b=$b;
 		}
+
+		function anyfunc($p) {
+			$this->a=$p["hello"];
+			$this->b=$p["world"];
+		}
 	}
 
 	class ControllerMethodTest extends \PHPUnit_Framework_TestCase {
@@ -38,5 +43,17 @@
 			$m->invoke(array(),array("hello"=>1,"world"=>2));
 
 			$this->assertEquals(1,$controller->a);
+		}
+
+		function testAny() {
+			$controller=new DummyController();
+
+			$m=new ControllerMethod("anyfunc");
+			$m->any();
+			$m->setController($controller);
+			$m->invoke(array(),array("hello"=>1,"world"=>2));
+
+			$this->assertEquals(1,$controller->a);
+			$this->assertEquals(2,$controller->b);
 		}
 	}
