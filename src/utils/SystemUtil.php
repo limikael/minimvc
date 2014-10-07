@@ -9,8 +9,6 @@
 		 * Error handler.
 		 */
 		public static function exception_error_handler($errno, $errstr, $errfile, $errline) {
-//			Log::error($errstr);
-//			Log::error("^ ".$errfile.":".$errline);
 			throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
 		}
 
