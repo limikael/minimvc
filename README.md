@@ -3,9 +3,9 @@ minimvc
 
 Minimalistic Web Framewok.
 
-A career in the making, it is Invended Here&trade; and Exactly The Way I Want It&trade;.
+Half my career in the making, it is Invended Here&trade; and Exactly The Way I Want It&trade;.
 
-It may or may not be what _you_ want, but if it is, feel free to use it. I will make an effort here to explain some concepts.
+It may or may not be what _you_ want, but if it is, feel free to use it. In an effort mainly to untangle my crumpled thoughts I will try to explain some concepts here.
 
 MVC
 ---
