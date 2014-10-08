@@ -36,12 +36,10 @@ Say that this template is saved in a file called `my_template.php`. Now, to use 
 
 ````php
 <?php
-
     require_once "template/Template.php";
 
     $template=new Template("my_template.php");
     $template->set("title", "The title of the page");
     $template->set("somevar", "The value of some variable");
     $template->show();
-?>
 `````
