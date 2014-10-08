@@ -17,7 +17,7 @@ There is reference documentation here: http://limikael.altervista.org/minimvcdoc
 Templates
 ---------
 
-The templates constitute the view part of this framework. There are templating engines such as Smarty and PHPTAL. Why not use them? Why does Drupal not use them? Well I don't know for sure what Drupal's motivation is, but personally I find them a bit bloated. Actually, PHP _is_ in itself a kind of template system. Why not just use it the way it is? This is what I did at first, but I found that things became a bit messy. When creating template files, I wanted easy access to the data that should be displayed, as if they were just global PHP variables. But when creating business logic, there was a benefit in being able be a little bit more structured and put things in classes and so.
+The templates constitute the view part of this framework. There are templating engines such as Smarty and PHPTAL. Why not use them? Why does Drupal not use them? Well I don't know exatcly what Drupal's motivation is, but personally I find them a bit bloated. Actually, PHP _is_ in itself a kind of template system. Why not just use it the way it is? This is what I did at first, but I found that things became a bit messy. I like to keep things as simple as possible but not simpler. When creating template files, I wanted easy access to the data that should be displayed, as if they were just global PHP variables. But when creating business logic, there was a benefit in being able be a little bit more structured and put things in classes and so.
 
 So I invented my [Template](http://limikael.altervista.org/minimvcdoc/class-Template.html) class. Using this, I can create a template in pure PHP with global variables:
 
