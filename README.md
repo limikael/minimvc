@@ -32,7 +32,7 @@ So I invented my [Template](http://limikael.altervista.org/minimvcdoc/class-Temp
 </html>
 ````
 
-Say that this template is saved in a file called `my_template.php`. Now, to use this template, we can use the Template class like this:
+Say that this template is saved in a file called `my_template.php`. Now, to use this template, we can use the [Template](http://limikael.altervista.org/minimvcdoc/class-Template.html) class like this:
 
 ````php
 <?php
