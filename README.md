@@ -65,4 +65,19 @@ In many situations, for example if we have a page that has a header and a footer
 Controllers
 -----------
 
-The controller part of the system is used to feed data into the templates, and read and update data in the Models. This is known as the "business logic", because this is where the application "does it's business".
+The controller part of the system is used to feed data into the templates, and read and update data in the Models. This is known as the "business logic", because this is where the application "does it's business". In the old days, this was done by having different php scripts for doing different things. This made it a bit difficult to reuse code and keep a good structure. I came up with a two level hierarcy, where I use "controllers" and "methods". For a site deployed to localhost, our urls look somethig like:
+
+    http://localhost/hello/world
+
+Where "hello" is the controller and "world" is the method. In order to get this to work, we use the [WebDispatcher](http://limikael.altervista.org/minimvcdoc/class-WebDispatcher.html) class. In order to use it, we first need a very simple `index.php` file that looks something like this:
+
+````php
+<?php
+    require_once "dispatcher/WebDispatcher.php";
+
+    $dispatcher=new WebDispatcher(_PATH_TO_CONTROLLER_DIR_);
+    $dispatcher->dispatch();
+`````
+
+We should put this in the web root of our project, and alongside with it we put a `.htaccess` file, so that the `index.php` file catches all web requests. The [dispatch](http://limikael.altervista.org/minimvcdoc/class-WebDispatcher.html#_dispatch) function will look at the request, and route it to the correct controller and method.
+
