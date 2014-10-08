@@ -43,3 +43,21 @@ Say that this template is saved in a file called `my_template.php`. Now, to use 
     $template->set("somevar", "The value of some variable");
     $template->show();
 `````
+
+The [show](http://limikael.altervista.org/minimvcdoc/class-Template.html#_show) function will set up the variables as global, but only for the template to use, and it will render the template and output it to the browser.
+
+In many situations, for example if we have a page that has a header and a footer and some content inside of it, we would like to use the renderation of a template as a variable for another template. The [render](http://limikael.altervista.org/minimvcdoc/class-Template.html#_render) function comes in handy in these situations:
+
+````php
+<?php
+    require_once "template/Template.php";
+
+    $contentTemplate=new Template("my_content_template.php");
+    $contentTemplate->set("title", "The title of the page");
+    $contentTemplate->set("somevar", "The value of some variable");
+    $content=$contentTemplate->render();
+
+    $pageTemplate=new Template("my_header_and_footer_template.php");
+    $pageTemplate->set("content", $content);
+    $pageTemplate->show();
+`````
