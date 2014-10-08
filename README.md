@@ -61,3 +61,8 @@ In many situations, for example if we have a page that has a header and a footer
     $pageTemplate->set("content", $content);
     $pageTemplate->show();
 `````
+
+Controllers
+-----------
+
+The controller part of the system is used to feed data into the templates, and read and update data in the Models. This is known as the "business logic", because this is where the application "does it's business".
