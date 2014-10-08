@@ -32,5 +32,16 @@ So I invented my [Template](http://limikael.altervista.org/minimvcdoc/class-Temp
 </html>
 ````
 
-Say that this template is saved in a file called `template.php`. Now, to use this template, we can use the Template class like this:
+Say that this template is saved in a file called `my_template.php`. Now, to use this template, we can use the Template class like this:
 
+````php
+<?php
+
+    require_once "template/Template.php";
+
+    $template=new Template("my_template.php");
+    $template->set("title", "The title of the page");
+    $template->set("somevar", "The value of some variable");
+    $template->show();
+?>
+`````
