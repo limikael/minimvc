@@ -72,16 +72,23 @@ In many situations, for example if we have a page that has a header and a footer
     $pageTemplate=new Template("my_header_and_footer_template.php");
     $pageTemplate->set("content", $content);
     $pageTemplate->show();
-`````
+````
 
 Controllers
 -----------
 
-The controller part of the system is used to feed data into the templates, and read and update data in the Models. This is known as the "business logic", because this is where the application "does it's business". In the old days, this was done by having different php scripts for doing different things. This made it a bit difficult to reuse code and keep a good structure. I came up with a two level hierarcy, where I use "controllers" and "methods". For a site deployed to localhost, our urls look somethig like:
+The controller part of the system is used to feed data into the templates, and read and update 
+data in the Models. This is known as the "business logic", because this is where the application
+"does it's business". In the old days, this was done by having different php scripts for doing
+different things. This made it a bit difficult to reuse code and keep a good structure. I came
+up with a two level hierarcy, where I use "controllers" and "methods". For a site deployed to
+localhost, our urls look somethig like:
 
     http://localhost/hello/world
 
-Where "hello" is the controller and "world" is the method. In order to get this to work, we use the [WebDispatcher](http://limikael.altervista.org/minimvcdoc/class-WebDispatcher.html) class. In order to use it, we first need a very simple `index.php` file that looks something like this:
+Where "hello" is the controller and "world" is the method. In order to get this to work, we use the
+[WebDispatcher](http://limikael.altervista.org/minimvcdoc/class-WebDispatcher.html) class. In order
+to use it, we first need a very simple `index.php` file that looks something like this:
 
 ````php
 <?php
@@ -89,7 +96,108 @@ Where "hello" is the controller and "world" is the method. In order to get this 
 
     $dispatcher=new WebDispatcher(_PATH_TO_CONTROLLER_DIR_);
     $dispatcher->dispatch();
-`````
+````
 
-We should put this in the web root of our project, and alongside with it we put a `.htaccess` file, so that the `index.php` file catches all web requests. The [dispatch](http://limikael.altervista.org/minimvcdoc/class-WebDispatcher.html#_dispatch) function will look at the request, and route it to the correct controller and method.
+We put file this in the web root of our project, and alongside with it we put a `.htaccess` file, 
+so that the `index.php` file catches all web requests. The 
+[dispatch](http://limikael.altervista.org/minimvcdoc/class-WebDispatcher.html#_dispatch)
+function will look at the request, and route it to the correct controller and method.
 
+Now, the directory specified by parameter passed to the constructor of the WebDispatcher 
+class, is where we put our controller class. We will use the url from above as example:
+
+    http://localhost/hello/world
+
+Here, the `hello` part specifies the controller and the `world` part the method. The way the routing works
+in practice is that the `WebDispatcher` will look for a file called `HelloController.php` in the controller
+path, and it expects to find a class called `HelloController` inside that file. It also expects that class
+to extend the 
+[WebController](http://limikael.altervista.org/minimvcdoc/class-WebController.html)
+class. 
+
+There is a also a mechanism for this class to delcare which of its methods that should actually be callable
+through the web. This is done in the constructor using the 
+[method](http://limikael.altervista.org/minimvcdoc/class-WebController.html#_method) method.
+An example controller, that would be suitable for handling the call above, could look something like this:
+
+````php
+    class HelloController extends WebDispatcher {
+
+        function HelloController() {
+            $this->method("world");
+        }
+
+        function world() {
+            echo "Hello World";
+        }
+    }
+````
+
+The [method](http://limikael.altervista.org/minimvcdoc/class-WebController.html#_method) method returns
+an instance of the [ControllerMethod](http://limikael.altervista.org/minimvcdoc/class-ControllerMethod.html)
+class. This class provides a number of chainable methods to further specify the behaivour of the declared 
+method. To summarize the controller concept so far:
+
+* Each web request has a controller and a method part.
+* The controller is class ending with Controller.
+* The controller must extend the WebController class.
+* The controller needs to declare its callable methods in the constructor.
+
+Declaring controller methods
+----------------------------
+
+As mentioned before, the
+[method](http://limikael.altervista.org/minimvcdoc/class-WebController.html#_method) method returns
+an instance of the [ControllerMethod](http://limikael.altervista.org/minimvcdoc/class-ControllerMethod.html)
+class. This class provides a number of chainable methods to further specify the behaivour of the declared 
+method. In this section I will describe these methods.
+
+In order to handle requests like this:
+
+    http://localhost/hello/world?a=somevalue&b=someothervalue
+
+We need to tell the system that the `world` method can accept the `a` and `b` parameters. This is done using
+the chainable `args` method, like this:
+
+````php
+    class HelloController extends WebDispatcher {
+
+        function HelloController() {
+            $this->method("world")->args("a","b");
+        }
+
+        function world($a, $b) {
+            echo "Hello World, the value of a is $a and b's value is $b";
+        }
+    }
+````
+
+We can also handle requests that expects arguments as paths. In this example 2 path variables:
+
+    http://localhost/hello/world/some/parameters
+
+This would be specified like this:
+
+````php
+    class HelloController extends WebDispatcher {
+
+        function HelloController() {
+            $this->method("world")->paths(2);
+        }
+
+        function world($first, $second) {
+            echo "Hello World, the path variables are $first and $second";
+        }
+    }
+````
+
+These two methods can also be combined into something that expects arguments both after the ? and 
+on the path using the following code in the constructor:
+
+````php
+    $this->method("world")->paths(2)->args("a","b");
+````
+
+There are a number of other ways to specify how the methods should behave, see the
+[ControllerMethod](http://limikael.altervista.org/minimvcdoc/class-ControllerMethod.html) class
+for details.
