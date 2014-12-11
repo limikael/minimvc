@@ -13,6 +13,7 @@
     },
     "scripts": {
         "test": "scripts/test.php",
-        "doc": "scripts/doc.php"
+        "doc": "scripts/doc.php",
+        "publish": "scripts/publish.php"
     }
 }

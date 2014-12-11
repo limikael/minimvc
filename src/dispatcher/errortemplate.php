@@ -26,7 +26,14 @@
 	</style>
 	<body>
 		<div class="content">
-			<?php echo $message; ?>
+			**** <?php echo $_SERVER["HTTP_HOST"]; ?> ****
+			<br/><br/>
+
+			<?php echo $error->getMessage(); ?>
+			<br/><br/>
+
+			<?php echo $error->getTraceAsString(); ?>
+			<br/><br/>
 		</div>
 	</body>
 </html>

@@ -138,7 +138,7 @@
 		 *
 		 * Calls fail in our {@link WebDispatcher}.
 		 */
-		public function fail($message, $trace) {
-			$this->dispatcher->fail($message,$trace);
+		public function fail($e) {
+			$this->dispatcher->fail($e);
 		}
 	}

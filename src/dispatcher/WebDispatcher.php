@@ -3,6 +3,7 @@
 	require_once __DIR__."/../utils/RewriteUtil.php";
 	require_once __DIR__."/../template/Template.php";
 	require_once __DIR__."/../utils/SystemUtil.php";
+	require_once __DIR__."/WebException.php";
 	require_once __DIR__."/WebController.php";
 
 	/**
@@ -44,6 +45,8 @@
 		private $classPath;
 		private $defaultController;
 		private $errorTemplate;
+		private $errorHandler;
+		private $errorRoute;
 
 		/**
 		 * Construct a WebDispatcher.
@@ -92,6 +95,33 @@
 		}
 
 		/**
+		 * Load controller.
+		 */
+		private function loadController($controllerName) {
+			$controllerClassName=ucfirst($controllerName)."Controller";
+			$controllerFileName=$this->classPath."/".$controllerClassName.".php";
+
+			if (!file_exists($controllerFileName))
+				$this->fail(new WebException("Page does not exist",404));
+
+			try {
+				require_once $controllerFileName;
+				$controller=new $controllerClassName;
+			}
+
+			catch (Exception $e) {
+				$this->fail(new WebException("No such controller",404,$e));
+			}
+
+			if (!$controller)
+				$this->fail(new WebException("No such controller.",404));
+
+			$controller->setDispatcher($this);
+
+			return $controller;
+		}
+
+		/**
 		 * Dispatch components.
 		 */
 		private function dispatchComponents($components) {
@@ -104,7 +134,7 @@
 				$controllerName=$this->defaultController;
 
 			if (!$controllerName)
-				$this->fail("No controller.");
+				$this->fail(new WebException("No controller.",404));
 
 			if (sizeof($components)>=2)
 				$methodName=$components[1];
@@ -112,26 +142,11 @@
 			else
 				$methodName="";
 
-			$controllerClassName=ucfirst($controllerName)."Controller";
-			$controllerFileName=$this->classPath."/".$controllerClassName.".php";
-
-			try {
-				require_once $controllerFileName;
-				$controller=new $controllerClassName;
-			}
-
-			catch (Exception $e) {
-				$this->fail($e->getMessage(),$e->getTraceAsString());
-			}
-
-			if (!$controller)
-				$this->fail("No such controller.");
-
-			$controller->setDispatcher($this);
+			$controller=$this->loadController($controllerName);
 			$method=$controller->getMethod($methodName);
 
 			if (!$method)
-				$this->fail("No such method.");
+				$this->fail(new WebException("No such method.",404));
 
 			$method->invoke(array_slice($components,2),$_REQUEST);
 		}
@@ -145,6 +160,25 @@
 		}
 
 		/**
+		 * Set error handler. 
+		 * This will be called on error with an exception as first
+		 * parameter. Before the function is called the relevant headers 
+		 * will be set up for sending to the client.
+		 */
+		public function setErrorHandler($handler) {
+			$this->errorHandler=$handler;
+		}
+
+		/**
+		 * Set error route. 
+		 * This should be a string on the form controller/method which
+		 * will be called with one parameter which is an Exception.
+		 */
+		public function setErrorRoute($route) {
+			$this->errorRoute=$route;
+		}
+
+		/**
 		 * Fail.
 		 *
 		 * Output an error header and show error message.
@@ -153,17 +187,31 @@
 		 * @param string $trace An optional stack trace that will be shown together
 		 *        with the message.
 		 */
-		public function fail($message, $trace="") {
+		public function fail($e) {
+			$code=500;
+
+			if ($e instanceof WebException)
+				$code=$e->getCode();
+
 			if (!headers_sent())
-				header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+				header($_SERVER['SERVER_PROTOCOL']." $code Error", true, $code);
 
-			$m="**** ".$_SERVER["HTTP_HOST"]." ****\n\n$message\n\n$trace";
+			if ($this->errorRoute) {
+				$components=explode("/",$this->errorRoute);
+				$controller=$this->loadController($components[0]);
+				call_user_func(array($controller,$components[1]),$e);
+			}
 
-			$m=nl2br($m);
+			else if ($this->errorHandler) {
+				call_user_func($this->errorHandler, $e);
+			}
 
-			$t=new Template($this->errorTemplate);
-			$t->set("message",$m);
-			$t->show();
+			else {
+				$t=new Template($this->errorTemplate);
+				$t->set("error",$e);
+				$t->show();
+			}
+
 			exit();
 		}
 	}

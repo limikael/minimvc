@@ -19,6 +19,17 @@
 			$this->method("genjsonerror")->type("json");
 			$this->method("generror2");
 			$this->method("genjsonerror2")->type("json");
+			$this->method("def");
+			$this->method("error");
+
+			$this->setDefaultMethod("def");
+		}
+
+		/**
+		 * Default.
+		 */
+		public function def() {
+			echo "default...";
 		}
 
 		/**
@@ -67,5 +78,12 @@
 			$t=array();
 			$a=$t["hello"];
 //			throw new Exception("this is an error");
+		}
+
+		/**
+		 *
+		 */
+		public function error($e) {
+			echo "there is an error: ".$e->getMessage();
 		}
 	}

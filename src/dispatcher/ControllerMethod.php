@@ -1,5 +1,7 @@
 <?php
 
+	require_once __DIR__."/WebException.php";
+
 	/**
 	 * A method definition for a controller.
 	 *
@@ -150,7 +152,7 @@
 			$invokeParams=$pathArgs;
 
 			if (sizeof($pathArgs)!=$this->numPathArgs)
-				$this->fail("Expected ".$this->numPathArgs." path arguments, got ".sizeof($pathArgs));
+				$this->fail(new WebException("Expected ".$this->numPathArgs." path arguments, got ".sizeof($pathArgs)));
 
 			foreach ($this->requestParameters as $paramName) {
 				$optional=FALSE;
@@ -167,7 +169,7 @@
 						$invokeParams[]=NULL;
 
 					else
-						$this->fail("Missing parameter $paramName");
+						$this->fail(new WebException("Missing parameter $paramName"));
 				}
 			}
 
@@ -179,7 +181,7 @@
 			}
 
 			catch (Exception $e) {
-				$this->fail($e->getMessage(),$e->getTraceAsString());
+				$this->fail(new WebException($e->getMessage(),500,$e));
 			}
 
 			switch ($this->resultProcessing) {
@@ -196,22 +198,34 @@
 		}
 
 		/**
+		 * Invoke raw.
+		 */
+		public function invokeRaw($params) {
+			call_user_func_array(array($this->controller,$this->methodName),$params);
+		}
+
+		/**
 		 * Fail.
 		 * 
 		 * Call fail in our {@link WebDispatcher}.
 		 */
-		private function fail($message, $trace=NULL) {
+		private function fail($e) {
 			switch ($this->resultProcessing) {
 				case "json":
-					if (!headers_sent())
-						header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+					$code=500;
 
-					$r=array("ok"=>0,"message"=>$message,"trace"=>$trace);
+					if ($e instanceof WebException)
+						$code=$e->getCode();
+
+					if (!headers_sent())
+						header($_SERVER['SERVER_PROTOCOL'] . ' $code Internal Server Error', true, $code);
+
+					$r=array("ok"=>0,"message"=>$e->getMessage(),"trace"=>$e->getTrageAsString());
 					echo json_encode($r);
 					break;
 
 				default:
-					$this->controller->fail($message,$trace);
+					$this->controller->fail($e);
 					break;
 			}
 
