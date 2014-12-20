@@ -1,6 +1,7 @@
 <?php
 	/**
 	 * Logging.
+	 * This should really not be here....
 	 */
 	class Log {
 
