@@ -2,6 +2,7 @@
 	/**
 	 * Logging.
 	 * This should really not be here....
+	 * Not this either
 	 */
 	class Log {
 
