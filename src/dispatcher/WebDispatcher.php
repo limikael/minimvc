@@ -91,6 +91,7 @@
 		 */
 		public function dispatch() {
 			$components=RewriteUtil::getPathComponents();
+
 			$this->dispatchComponents($components);
 		}
 
@@ -110,7 +111,8 @@
 			}
 
 			catch (Exception $e) {
-				$this->fail(new WebException("No such controller",404,$e));
+				$this->fail($e);
+				//$this->fail(new WebException("No such controller",404,$e));
 			}
 
 			if (!$controller)
